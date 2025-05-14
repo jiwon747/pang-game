@@ -35,8 +35,7 @@ function generateBoard() {
     board.push(symbol);
 
     const cell = document.createElement('div');
-    cell.classList.add('selected');
-    cell.classList.remove('selected');
+    cell.classList.add('cell');
     cell.textContent = symbol;
     cell.dataset.index = i;
     cell.addEventListener('click', () => handleClick(i));
