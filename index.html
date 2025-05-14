@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>동물팡</title>
+
+  <!-- ✅ 모바일 최적화 메타 태그 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="동물팡">
+  <link rel="apple-touch-icon" href="icon.png">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+      <span id="timer">⏰ 60</span>
+      <h1>🐾 <span>동물팡</span> 🐾</h1>
+      <span id="score">점수: 0</span>
+    </div>
+  </header>
+
+  <!-- ✅ 게임 보드 -->
+  <div id="game-board"></div>
+
+  <!-- ✅ 메시지 영역 -->
+  <div id="message"></div>
+
+  <!-- ✅ 다시 시작 버튼 -->
+  <div class="restart-container">
+    <button id="restart-btn">🔁 다시 시작</button>
+  </div>
+
+  <!-- ✅ 효과음 -->
+  <audio id="pop-sound" src="assets/sounds/pop.mp3" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>

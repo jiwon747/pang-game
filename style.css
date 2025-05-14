@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #fffaf3;
+  text-align: center;
+  user-select: none;
+}
+
+header {
+  padding: 10px 0;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+}
+
+.top-bar h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(10, 48px);
+  gap: 4px;
+  justify-content: center;
+  margin: 20px auto;
+  max-width: 100%;
+}
+
+.cell {
+  width: 48px;
+  height: 48px;
+  background-color: white;
+  border-radius: 10px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  position: relative;
+  cursor: pointer;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cell:hover {
+  background-color: #f2f2f2;
+  transform: scale(1.05);
+}
+
+.burst {
+  animation: pop 0.4s ease-out forwards;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+#message {
+  margin-top: 10px;
+  font-size: 16px;
+  color: red;
+  min-height: 20px;
+}
+
+.restart-container {
+  margin-top: 20px;
+}
+
+button {
+  font-size: 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 2px solid #aaa;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #eee;
+}
+
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #game-board {
+    transform: scale(0.95);
+  }
+
+  .cell {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
