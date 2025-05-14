@@ -1,4 +1,4 @@
-const boardSize = 10;
+const boardSize = 8;
 const symbols = ['🐶','🐱','🐰','🐻','🦊','🐼'];
 let board = [];
 let firstClick = null;
