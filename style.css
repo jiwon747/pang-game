@@ -25,24 +25,31 @@ header {
 
 #game-board {
   display: grid;
-  grid-template-columns: repeat(8, 64px);
-  gap: 2px;
-  justify-content: center;
+  grid-template-columns: repeat(8, 1fr); /* ✅ 8등분 */
+  aspect-ratio: 1 / 1;                   /* ✅ 정사각형 유지 */
+  width: 92vmin;                         /* ✅ 화면의 92%에 맞춤 */
+  max-width: 92vmin;
+  max-height: 92vmin;
+  gap: 1vmin;                            /* ✅ 반응형 간격 */
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .cell {
-  width: 64px;
-  height: 64px;
-  font-size: 42px;
-  line-height: 1;
+  width: 100%;     /* ✅ 자동 채움 */
+  height: 100%;
+  font-size: 6vmin; /* ✅ 화면 크기에 따라 이모지 크기도 반응형 */
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: white;
-  border-radius: 10px;
-  transition: transform 0.3s ease;
-  position: relative;
+  border-radius: 10%;
+  line-height: 1;
+  box-sizing: border-box;
   cursor: pointer;
+  user-select: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
