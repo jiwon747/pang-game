@@ -25,7 +25,7 @@ header {
 
 #game-board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* ✅ 8등분 */
+  grid-template-columns: repeat(6, 1fr); /* ✅ 6등분 */
   aspect-ratio: 1 / 1;                   /* ✅ 정사각형 유지 */
   width: 92vmin;                         /* ✅ 화면의 92%에 맞춤 */
   max-width: 92vmin;
