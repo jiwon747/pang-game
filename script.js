@@ -1,4 +1,5 @@
-const boardSize = 6;
+const boardSize = 6
+;
 const symbols = ['🐶','🐱','🐰','🐻','🦊','🐼'];
 let board = [];
 let firstClick = null;
@@ -132,26 +133,24 @@ function checkMatches() {
 }
 
 function animateMatch(indices) {
-    if (isProcessing) return;
-    isProcessing = true;
-  
-    indices.forEach(i => {
-      const cell = boardEl.children[i];
-      cell.classList.add('burst');
-    });
-  
+  indices.forEach(i => {
+    const cell = boardEl.children[i];
+    cell.classList.add('burst');
+
+    // 터지는 사운드도 동시에 재생
+    popSound.currentTime = 0;
+    popSound.play();
+
     setTimeout(() => {
-      indices.forEach(i => {
-        board[i] = null;
-        boardEl.children[i].classList.remove('burst');
-      });
+      board[i] = symbols[Math.floor(Math.random() * symbols.length)];
+      cell.classList.remove('burst');
       updateBoard();
-      score += 100;
-      scoreEl.textContent = `점수: ${score}`;
-      isProcessing = false;
-      dropAndRefill();
-    }, 400);
-  }  
+    }, 500);
+  });
+
+  score += 100;
+  scoreEl.textContent = `점수: ${score}`;
+}  
 
 function dropAndRefill() {
     if (isProcessing || isGameOver) return;
