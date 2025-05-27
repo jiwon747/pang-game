@@ -1,232 +1,111 @@
-const boardSize = 6
-;
-const symbols = ['🐶','🐱','🐰','🐻','🦊','🐼'];
-let board = [];
-let firstClick = null;
-let timerInterval;
-let remainingTime = 60;
+const wordPool = [
+  // 총 100개 단어
+  '사과', '바나나', '포도', '딸기', '수박', '참외', '귤', '복숭아', '자두', '오렌지',
+  '김밥', '떡볶이', '라면', '피자', '햄버거', '국수', '밥', '김치', '빵', '주스',
+  '사탕', '초콜릿', '우유', '요구르트', '치즈', '계란', '미역국', '된장국', '샐러드', '만두',
+  '강아지', '고양이', '토끼', '호랑이', '사자', '곰', '여우', '코끼리', '돼지', '기린',
+  '말', '다람쥐', '너구리', '오리', '닭', '독수리', '펭귄', '하마', '물개', '고래',
+  '가방', '연필', '지우개', '공책', '의자', '책상', '시계', '우산', '컵', '신발',
+  '모자', '옷', '장갑', '전화기', '텔레비전', '냉장고', '컴퓨터', '선풍기', '청소기', '거울',
+  '구름', '비', '눈', '해', '달', '별', '산', '강', '바다', '나무',
+  '꽃', '풀', '돌', '불', '바람', '모래', '무지개', '하늘', '연못', '숲',
+  '웃음', '울음', '걷기', '달리기', '점프', '노래', '춤', '그림', '놀이', '공부'
+];
+
+const TOTAL_QUESTIONS = 20;
+let words = [];
+let currentWordIndex = 0;
 let score = 0;
 
-let isProcessing = false;
-let isGameOver = false;
-
-const boardEl = document.getElementById('game-board');
-const messageEl = document.getElementById('message');
-const timerEl = document.getElementById('timer');
-const popSound = document.getElementById('pop-sound');
-const restartBtn = document.getElementById('restart-btn');
-const scoreEl = document.getElementById('score');
-
-function startGame() {
-    isGameOver = false;
-    isProcessing = false;
-  resetTimer();
+function generateQuestions() {
+  const shuffled = [...wordPool].sort(() => 0.5 - Math.random());
+  words = shuffled.slice(0, TOTAL_QUESTIONS).map(word => {
+    const others = wordPool.filter(w => w !== word);
+    const randomChoices = others.sort(() => 0.5 - Math.random()).slice(0, 4);
+    const choices = [...randomChoices, word].sort(() => 0.5 - Math.random());
+    return {
+      word,
+      correct: word,
+      choices
+    };
+  });
+  currentWordIndex = 0;
   score = 0;
-  scoreEl.textContent = `점수: ${score}`;
-  generateBoard();
-  startTimer();
-  messageEl.textContent = '';
 }
 
-function generateBoard() {
-  board = [];
-  boardEl.innerHTML = '';
-  for (let i = 0; i < boardSize * boardSize; i++) {
-    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-    board.push(symbol);
-
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.textContent = symbol;
-    cell.dataset.index = i;
-    cell.addEventListener('click', () => handleClick(i));
-    boardEl.appendChild(cell);
-  }
+function playWord() {
+  const utterance = new SpeechSynthesisUtterance(words[currentWordIndex].word);
+  utterance.lang = 'ko-KR';
+  speechSynthesis.speak(utterance);
+  renderChoices();
 }
 
-function handleClick(index) {
-  if (firstClick === null) {
-    firstClick = index;
-    boardEl.children[index].style.border = '2px solid blue';
+function renderChoices() {
+  const container = document.getElementById('choices');
+  const current = words[currentWordIndex];
+  const counter = document.getElementById('counter');
+  container.innerHTML = '';
+
+  // ✅ 문제 번호 카운트 표시 (예: 3 / 20)
+  counter.textContent = `${currentWordIndex + 1} / ${words.length}`;
+
+  current.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-button';
+    btn.textContent = choice;
+    btn.onclick = () => checkAnswer(choice);
+    container.appendChild(btn);
+  });
+}
+
+
+function checkAnswer(selected) {
+  const current = words[currentWordIndex];
+  const feedback = document.getElementById('feedback');
+
+  if (selected === current.correct) {
+    score++;
+    feedback.textContent = '🎉 딩동댕~';
+    feedback.style.color = '#333333';
   } else {
-    const second = index;
-    if (isAdjacent(firstClick, second)) {
-      boardEl.children[firstClick].style.border = '';
-      animateSwap(firstClick, second, () => {
-        if (checkMatches()) {
-          popSound.play();
-          setTimeout(() => {
-            dropAndRefill();
-          }, 500);
-        } else {
-          animateSwap(firstClick, second); // 원위치 복귀
-        }
-      });
-    } else {
-      boardEl.children[firstClick].style.border = '';
-    }
-    firstClick = null;
+    feedback.textContent = '❌ 땡';
+    feedback.style.color = '#333333';
   }
-}
-
-function isAdjacent(i, j) {
-  const x1 = i % boardSize, y1 = Math.floor(i / boardSize);
-  const x2 = j % boardSize, y2 = Math.floor(j / boardSize);
-  return (Math.abs(x1 - x2) + Math.abs(y1 - y2)) === 1;
-}
-
-function animateSwap(i, j, callback) {
-  const cellA = boardEl.children[i];
-  const cellB = boardEl.children[j];
-  const rectA = cellA.getBoundingClientRect();
-  const rectB = cellB.getBoundingClientRect();
-  const dx = rectB.left - rectA.left;
-  const dy = rectB.top - rectA.top;
-
-  cellA.style.transform = `translate(${dx}px, ${dy}px)`;
-  cellB.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
   setTimeout(() => {
-    [board[i], board[j]] = [board[j], board[i]];
-    updateBoard();
-
-    cellA.style.transform = '';
-    cellB.style.transform = '';
-
-    if (callback) callback();
-  }, 300);
-}
-
-function updateBoard() {
-  board.forEach((symbol, i) => {
-    boardEl.children[i].textContent = symbol;
-  });
-}
-
-function checkMatches() {
-  let matched = false;
-  let matchedIndices = new Set();
-
-  for (let i = 0; i < board.length; i++) {
-    const symbol = board[i];
-    // 가로 체크
-    if (i % boardSize <= boardSize - 3) {
-      if (board[i + 1] === symbol && board[i + 2] === symbol) {
-        matched = true;
-        matchedIndices.add(i).add(i + 1).add(i + 2);
-      }
+    feedback.textContent = '';
+    currentWordIndex++;
+    if (currentWordIndex < words.length) {
+      playWord();
+    } else {
+      showFinalResult();
     }
-    // 세로 체크
-    if (i + boardSize * 2 < board.length) {
-      if (board[i + boardSize] === symbol && board[i + boardSize * 2] === symbol) {
-        matched = true;
-        matchedIndices.add(i).add(i + boardSize).add(i + boardSize * 2);
-      }
-    }
-  }
-
-  if (matched) {
-    animateMatch([...matchedIndices]);
-  }
-
-  return matched;
+  }, 1500);
 }
 
-function animateMatch(indices) {
-  indices.forEach(i => {
-    const cell = boardEl.children[i];
-    cell.classList.add('burst');
+function showFinalResult() {
+  const container = document.getElementById('choices');
+  const feedback = document.getElementById('feedback');
+  const speakBtn = document.getElementById('speakBtn');
 
-    // 터지는 사운드도 동시에 재생
-    popSound.currentTime = 0;
-    popSound.play();
+  speakBtn.style.display = 'none'; // 다시 듣기 숨기기
+  container.innerHTML = '';
+  feedback.innerHTML = `게임 끝!<br>${words.length}문제 중 <strong>${score}</strong>개 맞혔어요! 🎉`;
 
-    setTimeout(() => {
-      board[i] = symbols[Math.floor(Math.random() * symbols.length)];
-      cell.classList.remove('burst');
-      updateBoard();
-    }, 500);
-  });
-
-  score += 100;
-  scoreEl.textContent = `점수: ${score}`;
-}  
-
-function dropAndRefill() {
-    if (isProcessing || isGameOver) return;
-    isProcessing = true;
-    
-    for (let x = 0; x < boardSize; x++) {
-      const column = [];
-  
-      for (let y = 0; y < boardSize; y++) {
-        const index = y * boardSize + x;
-        if (board[index] !== null) {
-          column.push(board[index]);
-        }
-      }
-  
-      const missing = boardSize - column.length;
-      const newSymbols = Array.from({ length: missing }, () =>
-        symbols[Math.floor(Math.random() * symbols.length)]
-      );
-      const newColumn = [...newSymbols, ...column];
-  
-      for (let y = 0; y < boardSize; y++) {
-        const index = y * boardSize + x;
-        const newSymbol = newColumn[y];
-        const cell = boardEl.children[index];
-  
-        board[index] = newSymbol;
-        cell.textContent = newSymbol;
-  
-        cell.style.transform = `translateY(-60px)`;
-        requestAnimationFrame(() => {
-          cell.style.transition = 'transform 0.3s ease';
-          cell.style.transform = 'translateY(0)';
-        });
-      }
-    }
-  
-    setTimeout(() => {
-      updateBoard();
-      isProcessing = false;
-  
-      if (!isGameOver && checkMatches()) {
-        setTimeout(dropAndRefill, 300);
-      }
-    }, 350);
-  }  
-
-function startTimer() {
-  remainingTime = 60;
-  timerEl.textContent = `⏰ ${remainingTime}`;
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    remainingTime--;
-    timerEl.textContent = `⏰ ${remainingTime}`;
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      endGame();
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  remainingTime = 60;
-  timerEl.textContent = `⏰ ${remainingTime}`;
+  const restartBtn = document.createElement('button');
+  restartBtn.textContent = '다시 시작';
+  restartBtn.className = 'speak-btn';
+  restartBtn.onclick = () => {
+    generateQuestions();
+    feedback.innerHTML = ''; // ✅ 다시 시작 시 결과 문구 숨기기
+    speakBtn.style.display = 'inline-block'; // 다시 듣기 복원
+    playWord();
+  };
+  container.appendChild(restartBtn);
 }
 
 
-function endGame() {
-  isGameOver = true;
-  messageEl.textContent = `🎉 게임 종료! 점수: ${score}점`;
-  for (let i = 0; i < boardEl.children.length; i++) {
-    boardEl.children[i].onclick = null;
-  }
-}
-
-restartBtn.addEventListener('click', startGame);
-
-startGame();
+window.onload = () => {
+  generateQuestions();
+  playWord();
+};
