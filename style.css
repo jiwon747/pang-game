@@ -42,9 +42,9 @@ h1 {
   max-width: 45%;
   min-width: 120px;
   font-size: 1.6rem;
-  padding: 15px;
-  border: 2px solid #ff00cc;
+  padding: 15px;ㄴ
   background-color: #ffffff;
+  border: 2px solid #ff00cc;
   border-radius: 15px;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
