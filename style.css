@@ -33,14 +33,24 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
+  align-items: center;
+  gap: 12px;
   margin-top: 20px;
 }
 
 .choice-button {
+  flex: 0 1 45%;  /* 한 줄에 두 개 정도 보이도록 */
+  max-width: 45%;
+  min-width: 140px;
+  font-size: 1.8rem;
+  padding: 20px;
+  margin: 5px;
   background-color: #ffffff;
   border: 2px solid #ff00cc;
+  border-radius: 15px;
+  cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
+
   -webkit-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
