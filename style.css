@@ -59,6 +59,23 @@ h1 {
   }
 }
 
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.choice-button.selected {
+  background-color: #ffeffb !important;
+  animation: pop 0.2s ease;
+}
+
 #feedback {
   font-size: 1.8rem;
   font-weight: bold;
