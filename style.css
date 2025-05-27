@@ -42,24 +42,26 @@ h1 {
   max-width: 45%;
   min-width: 120px;
   font-size: 1.6rem;
-  padding: 15px;ㄴ
+  padding: 15px;
   background-color: #ffffff;
   border: 2px solid #ff00cc;
   border-radius: 15px;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
+
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.choice-button {
-  -webkit-tap-highlight-color: transparent; /* 터치 하이라이트 제거 */
-  background-color: #ffffff; /* 기본 배경 흰색 */
-}
-
-/* 버튼 active 상태일 때도 배경 고정 */
-.choice-button:active {
+/* active 상태일 때도 흰색 유지 */
+.choice-button:active,
+.choice-button:focus {
   background-color: #ffffff !important;
+  outline: none;
 }
 
+/* hover 시에만 분홍 배경 적용 */
 .choice-button:hover {
   background-color: #ffeffb;
   transform: scale(1.05);
