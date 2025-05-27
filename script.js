@@ -62,11 +62,24 @@ function renderChoices() {
   });
 }
 
-function checkAnswer(selected) {
+function checkAnswer(selectedText) {
   const current = words[currentWordIndex];
   const feedback = document.getElementById('feedback');
 
-  if (selected === current.correct) {
+  // 모든 버튼에서 .selected 클래스 제거
+  document.querySelectorAll('.choice-button').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+
+  // 사용자가 누른 버튼에만 .selected 클래스 추가
+  const buttons = document.querySelectorAll('.choice-button');
+  buttons.forEach(btn => {
+    if (btn.textContent === selectedText) {
+      btn.classList.add('selected');
+    }
+  });
+
+  if (selectedText === current.correct) {
     score++;
     feedback.textContent = '🎉 딩동댕~';
     feedback.style.color = '#333333';

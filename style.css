@@ -38,29 +38,20 @@ h1 {
 }
 
 .choice-button {
-  flex: 1 1 40%;
-  max-width: 45%;
-  min-width: 120px;
-  font-size: 1.6rem;
-  padding: 15px;
   background-color: #ffffff;
   border: 2px solid #ff00cc;
-  border-radius: 15px;
-  cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
-
   -webkit-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* active 상태일 때도 흰색 유지 */
-.choice-button:active,
-.choice-button:focus {
-  background-color: #ffffff !important;
   outline: none;
 }
 
+.choice-button.selected {
+  background-color: #ffeffb !important; /* 선택된 버튼만 분홍색 */
+}
+
+/* 모바일에서 hover 제거 */
 @media (hover: none) {
   .choice-button:hover {
     background-color: #ffffff !important;
