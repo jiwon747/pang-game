@@ -96,7 +96,7 @@ function checkAnswer(selectedText) {
     } else {
       showFinalResult();
     }
-  }, 800);
+  }, 500);
 }
 
 function showFinalResult() {
