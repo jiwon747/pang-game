@@ -44,9 +44,13 @@ function renderChoices() {
   const container = document.getElementById('choices');
   const current = words[currentWordIndex];
   const counter = document.getElementById('counter');
-  container.innerHTML = '';
 
-  // ✅ 문제 번호 카운트 표시 (예: 3 / 20)
+  // ✅ 모든 자식 요소 완전히 제거 (DOM 메모리에서 제거)
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
+  // 카운터 업데이트
   counter.textContent = `${currentWordIndex + 1} / ${words.length}`;
 
   current.choices.forEach(choice => {
@@ -57,7 +61,6 @@ function renderChoices() {
     container.appendChild(btn);
   });
 }
-
 
 function checkAnswer(selected) {
   const current = words[currentWordIndex];
