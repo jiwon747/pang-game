@@ -50,6 +50,16 @@ h1 {
   transition: transform 0.2s, background-color 0.2s;
 }
 
+.choice-button {
+  -webkit-tap-highlight-color: transparent; /* 터치 하이라이트 제거 */
+  background-color: #ffffff; /* 기본 배경 흰색 */
+}
+
+/* 버튼 active 상태일 때도 배경 고정 */
+.choice-button:active {
+  background-color: #ffffff !important;
+}
+
 .choice-button:hover {
   background-color: #ffeffb;
   transform: scale(1.05);
