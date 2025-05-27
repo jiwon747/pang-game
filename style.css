@@ -61,6 +61,12 @@ h1 {
   outline: none;
 }
 
+/* hover 시에만 분홍 배경 적용 */
+.choice-button:hover {
+  background-color: #ffffff !important;
+  transform: none;
+}
+
 #feedback {
   font-size: 1.8rem;
   font-weight: bold;
