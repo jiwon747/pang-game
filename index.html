@@ -1,17 +1,535 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">  
-  <title>단어 짝짝!</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Fluent Emoji Gallery</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1c1c1e;
+    --muted: #6b6b70;
+    --accent: #3b82f6;
+    --border: #e2e4e8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    padding: 20px 24px 0;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 14px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    white-space: nowrap;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tab-btn {
+    padding: 10px 18px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .count {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .download-all {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .download-all:hover { opacity: 0.9; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    padding: 0 24px 40px;
+  }
+  .cell {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .cell img {
+    width: 48px;
+    height: 48px;
+  }
+  .cell .name {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.3;
+    height: 28px;
+    overflow: hidden;
+    word-break: break-word;
+  }
+  .cell .dl-row {
+    display: flex;
+    gap: 4px;
+  }
+  .cell .dl {
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 3px 8px;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .cell .dl:hover { background: var(--accent); color: #fff; }
+  .cell .dl:disabled { opacity: 0.5; cursor: default; }
+  .cell .folder-tag {
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .search-box {
+    position: relative;
+    width: 240px;
+    max-width: 240px;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 9px 32px 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 13px;
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .search-box .clear-btn {
+    display: none;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px;
+  }
+  .search-box.has-value .clear-btn { display: block; }
+  #searchPanel { display: none; }
+  #searchPanel.active { display: block; }
+  .empty-state {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181c;
+      --card-bg: #232428;
+      --text: #f0f0f2;
+      --muted: #9a9aa2;
+      --border: #34353a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181c;
+    --card-bg: #232428;
+    --text: #f0f0f2;
+    --muted: #9a9aa2;
+    --border: #34353a;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1c1c1e;
+    --muted: #6b6b70;
+    --border: #e2e4e8;
+  }
+</style>
 </head>
 <body>
-  <h1>🔊 들리는 단어를 눌러보세요!</h1>
-  <div id="counter" class="counter">1 / 20</div>
-  <button id="speakBtn" class="speak-btn" onclick="playWord()">다시 듣기</button>  
-  <div id="choices" class="choice-container"></div>
-  <p id="feedback"></p>
-  <script src="script.js"></script>
+
+<header>
+  <div class="title-row">
+    <h1>Fluent Emoji Gallery</h1>
+    <div class="search-box" id="searchBox">
+      <input type="text" id="searchInput" placeholder="아이콘 이름으로 검색..." autocomplete="off">
+      <button class="clear-btn" id="clearSearchBtn" title="검색 지우기">✕</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<div class="toolbar">
+  <span class="count" id="count"></span>
+  <button class="download-all" id="downloadAllBtn">이 카테고리 전체 다운로드</button>
+</div>
+
+<div id="panels"></div>
+<div id="searchPanel"></div>
+
+<script src="gallery-data.js"></script>
+<script>
+const tabsEl = document.getElementById("tabs");
+const panelsEl = document.getElementById("panels");
+const searchPanelEl = document.getElementById("searchPanel");
+const countEl = document.getElementById("count");
+const downloadAllBtn = document.getElementById("downloadAllBtn");
+const searchBox = document.getElementById("searchBox");
+const searchInput = document.getElementById("searchInput");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+let currentFolder = CATEGORIES[0][0];
+
+const folderLabel = {};
+CATEGORIES.forEach(([folder, label]) => { folderLabel[folder] = label; });
+
+const ALL_ITEMS = [];
+CATEGORIES.forEach(([folder]) => {
+  GALLERY_DATA[folder].forEach(item => {
+    ALL_ITEMS.push({ folder, name: item.name, file: item.file });
+  });
+});
+
+const PNG_SIZE = 256;
+
+function pngFileName(file) {
+  return file.replace(/\.svg$/i, ".png");
+}
+
+function svgToPngBlob(svgUrl, size) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob); else reject(new Error("PNG 변환 실패"));
+      }, "image/png");
+    };
+    img.onerror = () => reject(new Error("SVG 로드 실패"));
+    img.src = svgUrl;
+  });
+}
+
+function makeCell(folder, item, showFolderTag) {
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  const src = folder + "/" + encodeURIComponent(item.file);
+  cell.innerHTML =
+    '<img src="' + src + '" loading="lazy" alt="' + item.name + '">' +
+    '<div class="name">' + item.name + '</div>' +
+    (showFolderTag ? '<div class="folder-tag">' + (folderLabel[folder] || folder) + '</div>' : '') +
+    '<div class="dl-row">' +
+      '<a class="dl" href="' + src + '" download="' + item.file + '">SVG</a>' +
+      '<button type="button" class="dl png-btn" data-src="' + src + '" data-name="' + pngFileName(item.file) + '">PNG</button>' +
+    '</div>';
+  return cell;
+}
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".png-btn");
+  if (!btn) return;
+  const src = btn.dataset.src;
+  const name = btn.dataset.name;
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "...";
+  try {
+    const blob = await svgToPngBlob(src, PNG_SIZE);
+    triggerBlobDownload(blob, name);
+  } catch (err) {
+    alert("PNG 변환 실패: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+function runSearch(query) {
+  const q = query.trim().toLowerCase();
+  searchBox.classList.toggle("has-value", q.length > 0);
+
+  if (!q) {
+    searchPanelEl.classList.remove("active");
+    searchPanelEl.innerHTML = "";
+    tabsEl.style.display = "";
+    panelsEl.style.display = "";
+    downloadAllBtn.style.display = "";
+    selectTab(currentFolder);
+    return;
+  }
+
+  const matches = ALL_ITEMS.filter(item => item.name.toLowerCase().includes(q));
+
+  tabsEl.style.display = "none";
+  panelsEl.style.display = "none";
+  downloadAllBtn.style.display = "none";
+  searchPanelEl.classList.add("active");
+  searchPanelEl.innerHTML = "";
+
+  countEl.textContent = matches.length + "개 아이콘 검색됨";
+
+  if (matches.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = '"' + query + '"에 대한 검색 결과가 없습니다.';
+    searchPanelEl.appendChild(empty);
+    return;
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  matches.forEach(item => grid.appendChild(makeCell(item.folder, item, true)));
+  searchPanelEl.appendChild(grid);
+}
+
+searchInput.addEventListener("input", () => runSearch(searchInput.value));
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  runSearch("");
+  searchInput.focus();
+});
+
+CATEGORIES.forEach(([folder, label], idx) => {
+  const btn = document.createElement("button");
+  btn.className = "tab-btn" + (idx === 0 ? " active" : "");
+  btn.textContent = label + " (" + GALLERY_DATA[folder].length + ")";
+  btn.dataset.folder = folder;
+  btn.addEventListener("click", () => selectTab(folder));
+  tabsEl.appendChild(btn);
+
+  const panel = document.createElement("div");
+  panel.className = "panel" + (idx === 0 ? " active" : "");
+  panel.dataset.folder = folder;
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  GALLERY_DATA[folder].forEach(item => {
+    grid.appendChild(makeCell(folder, item, false));
+  });
+
+  panel.appendChild(grid);
+  panelsEl.appendChild(panel);
+});
+
+function selectTab(folder) {
+  currentFolder = folder;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.folder === folder));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.dataset.folder === folder));
+  countEl.textContent = GALLERY_DATA[folder].length + "개 아이콘";
+}
+selectTab(currentFolder);
+
+downloadAllBtn.addEventListener("click", async () => {
+  const items = GALLERY_DATA[currentFolder];
+  downloadAllBtn.disabled = true;
+  const originalText = downloadAllBtn.textContent;
+
+  // Try zip-based single-file download first (works when served over http/https).
+  try {
+    const zip = await buildZip(currentFolder, items, (done, total) => {
+      downloadAllBtn.textContent = `압축 중... (${done}/${total})`;
+    });
+    triggerBlobDownload(zip, currentFolder + ".zip");
+  } catch (err) {
+    // Fallback: file:// pages can't fetch() local siblings (CORS). Download one by one instead.
+    downloadAllBtn.textContent = "개별 다운로드 중...";
+    for (let i = 0; i < items.length; i++) {
+      const src = currentFolder + "/" + encodeURIComponent(items[i].file);
+      const a = document.createElement("a");
+      a.href = src;
+      a.download = items[i].file;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      await new Promise(r => setTimeout(r, 150));
+
+      try {
+        const pngBlob = await svgToPngBlob(src, PNG_SIZE);
+        triggerBlobDownload(pngBlob, pngFileName(items[i].file));
+        await new Promise(r => setTimeout(r, 150));
+      } catch (err) {
+        // best-effort in fallback mode; skip PNG if conversion fails
+      }
+    }
+  }
+
+  downloadAllBtn.disabled = false;
+  downloadAllBtn.textContent = originalText;
+});
+
+function triggerBlobDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+// Minimal store-only ZIP writer (no compression) built from fetched file bytes.
+// Packs both the original SVG and a 256px PNG render for each item.
+async function buildZip(folder, items, onProgress) {
+  const files = [];
+  for (let i = 0; i < items.length; i++) {
+    const src = folder + "/" + encodeURIComponent(items[i].file);
+
+    const res = await fetch(src);
+    if (!res.ok) throw new Error("fetch failed");
+    const svgBuf = new Uint8Array(await res.arrayBuffer());
+    files.push({ name: "svg/" + items[i].file, data: svgBuf });
+
+    const pngBlob = await svgToPngBlob(src, PNG_SIZE);
+    const pngBuf = new Uint8Array(await pngBlob.arrayBuffer());
+    files.push({ name: "png/" + pngFileName(items[i].file), data: pngBuf });
+
+    onProgress(i + 1, items.length);
+  }
+  return zipStore(files);
+}
+
+function crc32(buf) {
+  let table = crc32.table;
+  if (!table) {
+    table = crc32.table = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      table[n] = c >>> 0;
+    }
+  }
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < buf.length; i++) crc = table[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function zipStore(files) {
+  const encoder = new TextEncoder();
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+
+  for (const f of files) {
+    const nameBytes = encoder.encode(f.name);
+    const crc = crc32(f.data);
+    const size = f.data.length;
+
+    const localHeader = new DataView(new ArrayBuffer(30));
+    localHeader.setUint32(0, 0x04034b50, true);
+    localHeader.setUint16(4, 20, true);
+    localHeader.setUint16(6, 0, true);
+    localHeader.setUint16(8, 0, true);
+    localHeader.setUint16(10, 0, true);
+    localHeader.setUint16(12, 0, true);
+    localHeader.setUint32(14, crc, true);
+    localHeader.setUint32(18, size, true);
+    localHeader.setUint32(22, size, true);
+    localHeader.setUint16(26, nameBytes.length, true);
+    localHeader.setUint16(28, 0, true);
+
+    localParts.push(new Uint8Array(localHeader.buffer), nameBytes, f.data);
+
+    const centralHeader = new DataView(new ArrayBuffer(46));
+    centralHeader.setUint32(0, 0x02014b50, true);
+    centralHeader.setUint16(4, 20, true);
+    centralHeader.setUint16(6, 20, true);
+    centralHeader.setUint16(8, 0, true);
+    centralHeader.setUint16(10, 0, true);
+    centralHeader.setUint16(12, 0, true);
+    centralHeader.setUint16(14, 0, true);
+    centralHeader.setUint32(16, crc, true);
+    centralHeader.setUint32(20, size, true);
+    centralHeader.setUint32(24, size, true);
+    centralHeader.setUint16(28, nameBytes.length, true);
+    centralHeader.setUint16(30, 0, true);
+    centralHeader.setUint16(32, 0, true);
+    centralHeader.setUint16(34, 0, true);
+    centralHeader.setUint16(36, 0, true);
+    centralHeader.setUint32(38, 0, true);
+    centralHeader.setUint32(42, offset, true);
+
+    centralParts.push(new Uint8Array(centralHeader.buffer), nameBytes);
+
+    offset += 30 + nameBytes.length + size;
+  }
+
+  const centralStart = offset;
+  let centralSize = 0;
+  for (const p of centralParts) centralSize += p.length;
+
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(4, 0, true);
+  end.setUint16(6, 0, true);
+  end.setUint16(8, files.length, true);
+  end.setUint16(10, files.length, true);
+  end.setUint32(12, centralSize, true);
+  end.setUint32(16, centralStart, true);
+  end.setUint16(20, 0, true);
+
+  return new Blob([...localParts, ...centralParts, new Uint8Array(end.buffer)], { type: "application/zip" });
+}
+</script>
 </body>
 </html>
